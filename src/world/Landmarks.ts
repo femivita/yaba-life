@@ -13,11 +13,12 @@ import { ROAD_WIDTH, Roads, type RoadLine } from './Roads';
  * Tejuosho Market, E-Centre/Ozone, CcHUB, White House and the bars.
  */
 
+// THREE.Color(hex) already converts sRGB hex to linear, so vertex colours need no extra step
 const vc = new THREE.MeshLambertMaterial({ vertexColors: true });
 
 function colorize(g: THREE.BufferGeometry, hex: number) {
   const geo = g.index ? g.toNonIndexed() : g;
-  const c = new THREE.Color(hex).convertSRGBToLinear();
+  const c = new THREE.Color(hex);
   const n = geo.attributes.position.count;
   const arr = new Float32Array(n * 3);
   for (let i = 0; i < n; i++) arr.set([c.r, c.g, c.b], i * 3);
@@ -468,11 +469,12 @@ function buildBridges(roads: Roads, map: LoadedMap, batch: Batch) {
   const atEdge = (p: [number, number]) => p[0] < bx0 + 30 || p[0] > bx1 - 30 || p[1] < bz0 + 30 || p[1] > bz1 - 30;
   const pos: number[] = [];
   const col: number[] = [];
-  const asphalt = new THREE.Color(0x5e5e60).convertSRGBToLinear();
-  const concrete = new THREE.Color(0xb9b5ac).convertSRGBToLinear();
-  const under = new THREE.Color(0x77736c).convertSRGBToLinear();
+  const asphalt = new THREE.Color(0x5e5e60);
+  const concrete = new THREE.Color(0xb9b5ac);
+  const under = new THREE.Color(0x77736c);
+  // quads below are listed clockwise from outside, so emit them reversed (front faces out/up)
   const quad = (a: number[], b: number[], c: number[], d: number[], cc: THREE.Color) => {
-    pos.push(...a, ...b, ...c, ...a, ...c, ...d);
+    pos.push(...a, ...c, ...b, ...a, ...d, ...c);
     for (let i = 0; i < 6; i++) col.push(cc.r, cc.g, cc.b);
   };
   for (const b of bridges) {

@@ -151,8 +151,8 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #1b1f1d; col
   #life .need .lb { display: none; }
   #life .need { grid-template-columns: 18px 60px; }
   #life .wants { display: none; }
-  #life .top { top: auto; bottom: 200px; left: 14px; transform: none; flex-wrap: wrap; max-width: 60vw; }
+  #life .top { top: 76px; left: auto; right: 14px; transform: none; flex-direction: column; align-items: flex-end; }
   #life .phonebtn { right: 14px; bottom: 200px; }
   #life .usebtn { bottom: 260px; }
-  #life .toasts { top: 76px; }
+  #life .toasts { top: 200px; }
 }

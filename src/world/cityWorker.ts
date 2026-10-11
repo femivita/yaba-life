@@ -333,7 +333,7 @@ function buildAreas(meta: MapMeta, a: MapArrays) {
     const style = AREA_STYLE[kind] ?? AREA_STYLE.residential;
     const B = kind === 'water' ? b.water : b.areas;
     const base = B.vcount;
-    for (const p of all) B.vert(p.x, kind === 'water' ? -0.15 : style.y, p.y, 0, 1, 0, p.x / 40, p.y / 40, style.c);
+    for (const p of all) B.vert(p.x, kind === 'water' ? 0.001 : style.y, p.y, 0, 1, 0, p.x / 40, p.y / 40, style.c);
     for (const t of tris) B.idx.push(base + t[0], base + t[2], base + t[1]);
     const density = TREE_DENSITY[kind];
     if (density) scatterTrees(all, tris, density, kind === 'residential' || kind === 'campus' ? 0.4 : 0.25, i);
