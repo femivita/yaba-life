@@ -13,11 +13,15 @@ Building heights are mostly estimated from footprint size because OSM rarely rec
 
 ## Character
 
-`public/models/tunde.glb` is generated from **MakeHuman** assets (base mesh, morph targets, skin, clothes, hair, eyes and eyebrows by the MakeHuman team and community), which are released under **CC0**. See the MakeHuman licence FAQ: "Targets, proxies and the base mesh are considered graphical assets, covered by CC0." The MakeHuman logo printed on the original t-shirt texture has been removed.
+`public/models/*.glb` (Tunde, Iya Bisi, Amaka, Kemi, Chidi, Emeka, Baba the landlord and Mallam Sani) are generated from **MakeHuman** assets (base mesh, morph targets, skin, clothes, hair, eyes and eyebrows by the MakeHuman team and community), which are released under **CC0**. See the MakeHuman licence FAQ: "Targets, proxies and the base mesh are considered graphical assets, covered by CC0." The MakeHuman logo printed on the original t-shirt texture has been removed. Ankara prints are drawn procedurally by `tools/character/build_character.py`.
 
 ## Research
 
 Yaba places, districts and daily-life notes come from the project's research document (`yaba-places.json`). Coordinates marked approximate were snapped to OpenStreetMap features where a match exists.
+
+## Game design
+
+The life-sim systems are inspired by The Sims (needs, moodlets, smart objects, rabbit-hole careers). No assets or code from The Sims are used. See `docs/life-sim-design.md` for sources.
 
 ## Code
 

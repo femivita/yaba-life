@@ -1,0 +1,91 @@
+{
+  "id": "amaka",
+  "lite": true,
+  "ethnicity": {
+    "african": 1.0
+  },
+  "description": "Amaka, 21, UNILAG student: tee, jeans and braids",
+  "gender": 0.0,
+  "muscle": 0.45,
+  "weight": 0.42,
+  "height": 0.5,
+  "proportions": 0.9,
+  "skin": {
+    "roughness": 0.55,
+    "texture": {
+      "file": "skins/young_african_female/textures/young_darkskinned_female_diffuse.png",
+      "size": 512,
+      "quality": 88
+    }
+  },
+  "proxies": [
+    {
+      "path": "clothes/female_casualsuit01/female_casualsuit01.json",
+      "roughness": 0.9,
+      "texture": {
+        "file": "proxies/clothes/female_casualsuit01/textures/female_casualsuit01_diffuse.png",
+        "clone": [
+          [
+            75,
+            75,
+            355,
+            70,
+            450,
+            170
+          ]
+        ]
+      }
+    },
+    {
+      "path": "clothes/shoes05/shoes05.json",
+      "roughness": 0.9,
+      "texture": {
+        "file": "proxies/clothes/shoes05/textures/shoes05_diffuse.png"
+      }
+    },
+    {
+      "path": "hair/Braid01/Braid01.json",
+      "roughness": 0.75,
+      "alpha": "MASK",
+      "cutoff": 0.45,
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/hair/Braid01/textures/braid01_diffuse.png",
+        "tint": [
+          0.12,
+          0.1,
+          0.09
+        ]
+      }
+    },
+    {
+      "path": "eyebrows/eyebrow001/eyebrow001.json",
+      "alpha": "BLEND",
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/eyebrows/eyebrow001/textures/eyebrow001.png",
+        "tint": [
+          0.25,
+          0.2,
+          0.18
+        ]
+      }
+    },
+    {
+      "path": "eyelashes/Eyelashes01/Eyelashes01.json",
+      "alpha": "BLEND",
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/eyelashes/Eyelashes01/textures/eyelashes01.png"
+      }
+    },
+    {
+      "path": "eyes/Low-Poly/Low-Poly.json",
+      "roughness": 0.15,
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/eyes/Low-Poly/textures/brown_eye.png"
+      }
+    }
+  ]
+}

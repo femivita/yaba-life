@@ -116,11 +116,15 @@ const FACADES = [
 // corrugated roofing: rusty brown, aluminium, faded red, green, plus concrete decks
 const ROOFS = [[120, 72, 52], [150, 150, 150], [146, 70, 56], [80, 104, 84], [126, 120, 112], [96, 60, 46]];
 
-function buildBuildings(a: MapArrays) {
+function buildBuildings(a: MapArrays, skip: Set<number>) {
   let o = 0;
   const n = a.bCounts.length;
   for (let i = 0; i < n; i++) {
     const cnt = a.bCounts[i];
+    if (skip.has(i)) {
+      o += cnt;
+      continue;
+    }
     const h = a.bHeights[i] / 10;
     const kind = a.bKinds[i];
     const r = hash(i + 1);
@@ -238,6 +242,8 @@ function ribbon(B: Builder, pts: Vector2[], w: number, y: number, c: number[], v
   }
 }
 
+const ELEVATED = ['motorway', 'trunk', 'primary', 'secondary'];
+
 function buildRoads(meta: MapMeta, a: MapArrays) {
   let o = 0;
   const classes = meta.roads.classes;
@@ -249,6 +255,8 @@ function buildRoads(meta: MapMeta, a: MapArrays) {
     const pts: Vector2[] = [];
     for (let k = 0; k < cnt; k++) pts.push(new Vector2(a.rCoords[(o + k) * 2] / 10, a.rCoords[(o + k) * 2 + 1] / 10));
     o += cnt;
+    // bridges are built as elevated decks on the main thread (Landmarks)
+    if (a.rClass[i] & 0x80 && ELEVATED.includes(cls)) continue;
     // split long polylines into the chunk of their midpoint per piece of ~CHUNK/2
     let start = 0;
     let acc = 0;
@@ -325,7 +333,7 @@ function buildAreas(meta: MapMeta, a: MapArrays) {
     const style = AREA_STYLE[kind] ?? AREA_STYLE.residential;
     const B = kind === 'water' ? b.water : b.areas;
     const base = B.vcount;
-    for (const p of all) B.vert(p.x, kind === 'water' ? -0.15 : style.y, p.y, 0, 1, 0, p.x / 40, p.y / 40, style.c);
+    for (const p of all) B.vert(p.x, kind === 'water' ? 0.001 : style.y, p.y, 0, 1, 0, p.x / 40, p.y / 40, style.c);
     for (const t of tris) B.idx.push(base + t[0], base + t[2], base + t[1]);
     const density = TREE_DENSITY[kind];
     if (density) scatterTrees(all, tris, density, kind === 'residential' || kind === 'campus' ? 0.4 : 0.25, i);
@@ -435,13 +443,14 @@ function segDist(x: number, z: number, ax: number, az: number, bx: number, bz: n
   return Math.hypot(x - ax - ex * t, z - az - ez * t);
 }
 
-self.onmessage = (e: MessageEvent<{ meta: MapMeta; buf: ArrayBuffer }>) => {
+self.onmessage = (e: MessageEvent<{ meta: MapMeta; buf: ArrayBuffer; skip?: number[] }>) => {
   const { meta, buf } = e.data;
+  const skip = new Set(e.data.skip ?? []);
   const a = viewArrays(meta, buf);
   buildBlockers(meta, a);
   buildAreas(meta, a);
   buildRoads(meta, a);
-  buildBuildings(a);
+  buildBuildings(a, skip);
   // send nearest-first is decided by the main thread; just stream everything
   for (const [key, c] of chunks) {
     const g: ChunkGeometry = {

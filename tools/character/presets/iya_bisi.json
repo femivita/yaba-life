@@ -1,0 +1,135 @@
+{
+  "id": "iya_bisi",
+  "lite": true,
+  "ethnicity": {
+    "african": 1.0
+  },
+  "description": "Iya Bisi, 50, okrika trader at Yaba Market: ankara dress and gele",
+  "gender": 0.0,
+  "old": 0.4,
+  "muscle": 0.45,
+  "weight": 0.78,
+  "height": 0.45,
+  "proportions": 0.6,
+  "skin": {
+    "roughness": 0.55,
+    "texture": {
+      "file": "skins/middleage_african_female/textures/middleage_darkskinned_female_diffuse.png",
+      "size": 512,
+      "quality": 88
+    }
+  },
+  "proxies": [
+    {
+      "path": "clothes/F_Dress_01/F_Dress_01.json",
+      "roughness": 0.9,
+      "texture": {
+        "file": "proxies/clothes/F_Dress_01/textures/F_Dress_01.png",
+        "ankara": {
+          "colors": [
+            [
+              196,
+              74,
+              24
+            ],
+            [
+              246,
+              190,
+              40
+            ],
+            [
+              24,
+              94,
+              72
+            ],
+            [
+              30,
+              40,
+              90
+            ]
+          ],
+          "seed": 3,
+          "tile": 56,
+          "style": "rings"
+        }
+      }
+    },
+    {
+      "path": "clothes/shoes02/shoes02.json",
+      "roughness": 0.9,
+      "texture": {
+        "file": "proxies/clothes/shoes02/textures/shoes02_diffuse.png"
+      }
+    },
+    {
+      "path": "hair/Wig_bun_blonde/Wig_bun_blonde.json",
+      "roughness": 0.75,
+      "cutoff": 0.45,
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/hair/Wig_bun_blonde/textures/wig_bun_blonde_diff1.png",
+        "tint": [
+          1,
+          1,
+          1
+        ],
+        "ankara": {
+          "colors": [
+            [
+              24,
+              94,
+              72
+            ],
+            [
+              246,
+              190,
+              40
+            ],
+            [
+              196,
+              74,
+              24
+            ],
+            [
+              250,
+              240,
+              220
+            ]
+          ],
+          "seed": 5,
+          "tile": 48,
+          "style": "leaves"
+        }
+      }
+    },
+    {
+      "path": "eyebrows/eyebrow001/eyebrow001.json",
+      "alpha": "BLEND",
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/eyebrows/eyebrow001/textures/eyebrow001.png",
+        "tint": [
+          0.25,
+          0.2,
+          0.18
+        ]
+      }
+    },
+    {
+      "path": "eyelashes/Eyelashes01/Eyelashes01.json",
+      "alpha": "BLEND",
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/eyelashes/Eyelashes01/textures/eyelashes01.png"
+      }
+    },
+    {
+      "path": "eyes/Low-Poly/Low-Poly.json",
+      "roughness": 0.15,
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/eyes/Low-Poly/textures/brown_eye.png"
+      }
+    }
+  ]
+}

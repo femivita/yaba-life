@@ -1,0 +1,81 @@
+{
+  "id": "chidi",
+  "lite": true,
+  "ethnicity": {
+    "african": 1.0
+  },
+  "description": "Chidi, 26, barman at a Sabo sports bar: striped shirt and jeans",
+  "gender": 1.0,
+  "muscle": 0.62,
+  "weight": 0.5,
+  "height": 0.52,
+  "proportions": 0.9,
+  "skin": {
+    "roughness": 0.55,
+    "texture": {
+      "file": "skins/young_african_male/textures/young_darkskinned_male_diffuse.png",
+      "size": 512,
+      "quality": 88
+    }
+  },
+  "proxies": [
+    {
+      "path": "clothes/male_casualsuit03/male_casualsuit03.json",
+      "roughness": 0.9,
+      "texture": {
+        "file": "proxies/clothes/male_casualsuit03/textures/male_casualsuit03_diffuse.png"
+      }
+    },
+    {
+      "path": "clothes/shoes05/shoes05.json",
+      "roughness": 0.9,
+      "texture": {
+        "file": "proxies/clothes/shoes05/textures/shoes05_diffuse.png"
+      }
+    },
+    {
+      "path": "hair/short02/short02.json",
+      "roughness": 0.75,
+      "alpha": "MASK",
+      "cutoff": 0.45,
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/hair/short02/textures/short02_diffuse.png",
+        "tint": [
+          0.12,
+          0.1,
+          0.09
+        ]
+      }
+    },
+    {
+      "path": "eyebrows/eyebrow001/eyebrow001.json",
+      "alpha": "BLEND",
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/eyebrows/eyebrow001/textures/eyebrow001.png",
+        "tint": [
+          0.25,
+          0.2,
+          0.18
+        ]
+      }
+    },
+    {
+      "path": "eyelashes/Eyelashes01/Eyelashes01.json",
+      "alpha": "BLEND",
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/eyelashes/Eyelashes01/textures/eyelashes01.png"
+      }
+    },
+    {
+      "path": "eyes/Low-Poly/Low-Poly.json",
+      "roughness": 0.15,
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/eyes/Low-Poly/textures/brown_eye.png"
+      }
+    }
+  ]
+}

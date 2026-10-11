@@ -1,41 +1,61 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 export type Gait = 'idle' | 'walk' | 'run';
+/** Clips baked by tools/character/build_character.py. */
+export type Clip = Gait | 'talk' | 'work' | 'sit' | 'sit_eat' | 'sit_work' | 'dance' | 'lie';
 
 /** Ground speed (m/s) each clip was authored for, used to sync stride to movement. */
 const CLIP_SPEED: Record<Gait, number> = { idle: 0, walk: 1.45, run: 4.6 };
 
+const cache = new Map<string, Promise<GLTF>>();
+function loadGltf(url: string) {
+  let p = cache.get(url);
+  if (!p) cache.set(url, (p = new GLTFLoader().loadAsync(url)));
+  return p;
+}
+
 /**
- * A skinned MakeHuman-generated character with idle/walk/run clips.
- * Handles cross-fading and keeps feet from sliding by scaling clip speed.
+ * A skinned MakeHuman-generated character. Locomotion blends idle/walk/run
+ * from ground speed (scaling clip speed so feet don't slide); `pose` holds
+ * an action clip such as sitting or talking until cleared.
  */
 export class Character {
   readonly root = new THREE.Group();
   private mixer!: THREE.AnimationMixer;
-  private actions = new Map<Gait, THREE.AnimationAction>();
-  private gait: Gait = 'idle';
+  private actions = new Map<Clip, THREE.AnimationAction>();
+  private current: Clip = 'idle';
+  /** action clip that overrides locomotion while set */
+  pose: Clip | null = null;
+  materials: THREE.MeshStandardMaterial[] = [];
 
-  static async load(url: string): Promise<Character> {
+  static async load(url: string, opts: { shadows?: boolean; tint?: Record<string, number> } = {}): Promise<Character> {
+    const gltf = await loadGltf(url);
     const c = new Character();
-    const gltf = await new GLTFLoader().loadAsync(url);
-    const model = gltf.scene;
+    const model = cloneSkinned(gltf.scene);
     model.traverse((o) => {
       const m = o as THREE.SkinnedMesh;
       if (m.isSkinnedMesh) {
-        m.castShadow = true;
+        m.castShadow = opts.shadows ?? true;
         m.receiveShadow = false;
-        // the character is small on screen and always near the camera
+        // skinned bounds are unreliable once animated; culling is done per character instead
         m.frustumCulled = false;
-        const mats = Array.isArray(m.material) ? m.material : [m.material];
-        for (const mat of mats as THREE.MeshStandardMaterial[]) {
-          if (mat.name === 'body') {
+        const src = Array.isArray(m.material) ? m.material : [m.material];
+        const mats = (src as THREE.MeshStandardMaterial[]).map((mat) => {
+          const mm = mat.clone();
+          if (mm.name === 'body') {
             // a touch of sheen on dark skin reads much more natural
-            mat.roughness = 0.5;
-            mat.envMapIntensity = 0.7;
+            mm.roughness = 0.5;
+            mm.envMapIntensity = 0.7;
           }
-          if (mat.transparent) mat.depthWrite = false;
-        }
+          if (mm.transparent) mm.depthWrite = false;
+          const t = opts.tint?.[mm.name];
+          if (t !== undefined) mm.color.setHex(t);
+          c.materials.push(mm);
+          return mm;
+        });
+        m.material = Array.isArray(m.material) ? mats : mats[0];
       }
     });
     c.root.add(model);
@@ -44,28 +64,38 @@ export class Character {
       const action = c.mixer.clipAction(clip);
       action.play();
       action.setEffectiveWeight(clip.name === 'idle' ? 1 : 0);
-      c.actions.set(clip.name as Gait, action);
+      c.actions.set(clip.name as Clip, action);
     }
     return c;
   }
 
+  has(clip: Clip) {
+    return this.actions.has(clip);
+  }
+
+  private fadeTo(target: Clip, time = 0.25) {
+    if (target === this.current || !this.actions.has(target)) return;
+    const from = this.actions.get(this.current)!;
+    const to = this.actions.get(target)!;
+    to.enabled = true;
+    to.setEffectiveWeight(1);
+    const gaits = ['walk', 'run'];
+    if (gaits.includes(this.current) && gaits.includes(target)) {
+      // keep the legs in phase between walk and run
+      to.time = (from.time / from.getClip().duration) * to.getClip().duration;
+    } else {
+      to.time = Math.random() * to.getClip().duration;
+    }
+    from.crossFadeTo(to, time, false);
+    this.current = target;
+  }
+
   /** speed in m/s along the ground */
   update(dt: number, speed: number) {
-    const target: Gait = speed < 0.2 ? 'idle' : speed < 2.6 ? 'walk' : 'run';
-    if (target !== this.gait) {
-      const from = this.actions.get(this.gait)!;
-      const to = this.actions.get(target)!;
-      to.enabled = true;
-      to.setEffectiveWeight(1);
-      if (this.gait !== 'idle' && target !== 'idle') {
-        // keep the legs in phase between walk and run
-        to.time = (from.time / from.getClip().duration) * to.getClip().duration;
-      }
-      from.crossFadeTo(to, 0.25, false);
-      this.gait = target;
-    }
-    for (const [g, a] of this.actions) {
-      if (g !== 'idle') a.timeScale = THREE.MathUtils.clamp(speed / CLIP_SPEED[g], 0.6, 1.6);
+    const target: Clip = this.pose ?? (speed < 0.2 ? 'idle' : speed < 2.6 ? 'walk' : 'run');
+    this.fadeTo(target, this.pose ? 0.35 : 0.25);
+    for (const g of ['walk', 'run'] as const) {
+      this.actions.get(g)!.timeScale = THREE.MathUtils.clamp(speed / CLIP_SPEED[g], 0.6, 1.6);
     }
     this.mixer.update(dt);
   }

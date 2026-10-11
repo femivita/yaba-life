@@ -1,0 +1,97 @@
+{
+  "id": "sani",
+  "lite": true,
+  "ethnicity": {
+    "african": 1.0
+  },
+  "description": "Mallam Sani, 45, suya seller in Sabo: jacket, beard",
+  "gender": 1.0,
+  "old": 0.3,
+  "muscle": 0.5,
+  "weight": 0.4,
+  "height": 0.6,
+  "proportions": 0.8,
+  "skin": {
+    "roughness": 0.55,
+    "texture": {
+      "file": "skins/middleage_african_male/textures/middleage_darkskinned_male_diffuse.png",
+      "size": 512,
+      "quality": 88
+    }
+  },
+  "proxies": [
+    {
+      "path": "clothes/male_casualsuit05/male_casualsuit05.json",
+      "roughness": 0.9,
+      "texture": {
+        "file": "proxies/clothes/male_casualsuit05/textures/male_casualsuit05_diffuse.png"
+      }
+    },
+    {
+      "path": "clothes/shoes05/shoes05.json",
+      "roughness": 0.9,
+      "texture": {
+        "file": "proxies/clothes/shoes05/textures/shoes05_diffuse.png"
+      }
+    },
+    {
+      "path": "hair/short01/short01.json",
+      "roughness": 0.75,
+      "alpha": "MASK",
+      "cutoff": 0.45,
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/hair/short01/textures/short01_diffuse.png",
+        "tint": [
+          0.12,
+          0.1,
+          0.09
+        ]
+      }
+    },
+    {
+      "path": "hair/Full_beard/Full_beard.json",
+      "roughness": 0.75,
+      "alpha": "MASK",
+      "cutoff": 0.45,
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/hair/Full_beard/textures/Full_beard_black_diff.png",
+        "tint": [
+          0.12,
+          0.1,
+          0.09
+        ]
+      }
+    },
+    {
+      "path": "eyebrows/eyebrow001/eyebrow001.json",
+      "alpha": "BLEND",
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/eyebrows/eyebrow001/textures/eyebrow001.png",
+        "tint": [
+          0.25,
+          0.2,
+          0.18
+        ]
+      }
+    },
+    {
+      "path": "eyelashes/Eyelashes01/Eyelashes01.json",
+      "alpha": "BLEND",
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/eyelashes/Eyelashes01/textures/eyelashes01.png"
+      }
+    },
+    {
+      "path": "eyes/Low-Poly/Low-Poly.json",
+      "roughness": 0.15,
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/eyes/Low-Poly/textures/brown_eye.png"
+      }
+    }
+  ]
+}
