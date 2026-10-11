@@ -1,0 +1,109 @@
+{
+  "id": "tunde",
+  "description": "Tunde, 24, Yaba tech-hub hustler: white tee, jeans, white sneakers",
+  "gender": 1.0,
+  "muscle": 0.6,
+  "weight": 0.45,
+  "height": 0.5,
+  "proportions": 1.0,
+  "ethnicity": {
+    "african": 1.0
+  },
+  "skin": {
+    "roughness": 0.55,
+    "texture": {
+      "file": "skins/young_african_male/textures/young_darkskinned_male_diffuse.png",
+      "size": 1024,
+      "quality": 90
+    }
+  },
+  "proxies": [
+    {
+      "path": "clothes/male_casualsuit06/male_casualsuit06.json",
+      "roughness": 0.9,
+      "texture": {
+        "file": "proxies/clothes/male_casualsuit06/textures/male_casualsuit06_diffuse.png",
+        "erase": [
+          [
+            88,
+            52,
+            172,
+            92
+          ],
+          [
+            218,
+            58,
+            328,
+            110
+          ],
+          [
+            366,
+            82,
+            392,
+            108
+          ],
+          [
+            425,
+            492,
+            512,
+            512
+          ]
+        ]
+      },
+      "normal": {
+        "file": "proxies/clothes/male_casualsuit06/textures/male_casualsuit06_normal.png"
+      }
+    },
+    {
+      "path": "clothes/shoes05/shoes05.json",
+      "roughness": 0.6,
+      "texture": {
+        "file": "proxies/clothes/shoes05/textures/shoes05_diffuse.png"
+      }
+    },
+    {
+      "path": "hair/short04/short04.json",
+      "roughness": 0.7,
+      "alpha": "MASK",
+      "cutoff": 0.45,
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/hair/short04/textures/short04_diffuse.png",
+        "tint": [
+          0.35,
+          0.3,
+          0.28
+        ]
+      }
+    },
+    {
+      "path": "eyebrows/eyebrow001/eyebrow001.json",
+      "alpha": "BLEND",
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/eyebrows/eyebrow001/textures/eyebrow001.png",
+        "tint": [
+          0.25,
+          0.2,
+          0.18
+        ]
+      }
+    },
+    {
+      "path": "eyelashes/Eyelashes01/Eyelashes01.json",
+      "alpha": "BLEND",
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/eyelashes/Eyelashes01/textures/eyelashes01.png"
+      }
+    },
+    {
+      "path": "eyes/Low-Poly/Low-Poly.json",
+      "roughness": 0.15,
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/eyes/Low-Poly/textures/brown_eye.png"
+      }
+    }
+  ]
+}

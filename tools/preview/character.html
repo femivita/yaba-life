@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Character preview</title>
+<style>html,body{margin:0;height:100%;background:#9cb4c8}</style></head>
+<body>
+<script type="module">
+import * as THREE from 'three';
+import { Character } from '/src/player/Character.ts';
+const r = new THREE.WebGLRenderer({ antialias: true });
+r.setSize(innerWidth, innerHeight);
+r.shadowMap.enabled = true;
+document.body.appendChild(r.domElement);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x9cb4c8);
+const cam = new THREE.PerspectiveCamera(30, innerWidth / innerHeight, 0.1, 100);
+const params = new URLSearchParams(location.search);
+const view = params.get('view') || 'front';
+const dist = Number(params.get('dist') || 4.2);
+const angle = { front: 0, side: Math.PI / 2, back: Math.PI, three: 0.6 }[view];
+const h = Number(params.get('h') || 1.0);
+cam.position.set(Math.sin(angle) * dist, h, Math.cos(angle) * dist);
+cam.lookAt(0, h - (dist < 2 ? 0 : 0.05), 0);
+scene.add(new THREE.HemisphereLight(0xdfefff, 0x6b5a45, 1.2));
+const sun = new THREE.DirectionalLight(0xfff1dd, 2.4);
+sun.position.set(3, 6, 4); sun.castShadow = true; scene.add(sun);
+const g = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), new THREE.MeshStandardMaterial({ color: 0x8a8378 }));
+g.rotation.x = -Math.PI / 2; g.receiveShadow = true; scene.add(g);
+const c = await Character.load('/models/tunde.glb');
+scene.add(c.root);
+const speed = Number(params.get('speed') || 0);
+const t = Number(params.get('t') || 0);
+// advance to a deterministic time
+for (let i = 0; i < Math.round(t * 60); i++) c.update(1 / 60, speed);
+c.update(0.0001, speed);
+r.render(scene, cam);
+window.__ready = true;
+</script>
+</body></html>
