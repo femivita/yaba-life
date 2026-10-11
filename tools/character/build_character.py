@@ -124,22 +124,26 @@ def macro_weights(cfg):
         return {names[1]: 1 - (v - 0.5) * 2, names[2]: (v - 0.5) * 2}
 
     genders = {"male": male, "female": 1 - male}
+    # "old" blends the young-adult (25) shape towards MakeHuman's old (90) shape: 0.4 reads as about 50
+    ages = {"young": 1 - cfg.get("old", 0.0), "old": cfg.get("old", 0.0)}
     muscles = lerp3(muscle, ["minmuscle", "averagemuscle", "maxmuscle"])
     weights = lerp3(weight, ["minweight", "averageweight", "maxweight"])
-    for g, gw in genders.items():
-        if gw <= 0:
-            continue
-        for race, rw in cfg.get("ethnicity", {"african": 1.0}).items():
-            w[f"macrodetails/{race}-{g}-young"] = w.get(f"macrodetails/{race}-{g}-young", 0) + gw * rw
-        for m, mw in muscles.items():
-            for wt, ww in weights.items():
-                k = f"macrodetails/universal-{g}-young-{m}-{wt}"
-                w[k] = gw * mw * ww
-                if height != 0.5:
-                    hk = "maxheight" if height > 0.5 else "minheight"
-                    w[f"macrodetails/height/{g}-young-{m}-{wt}-{hk}"] = gw * mw * ww * abs(height - 0.5) * 2
-                pk = f"macrodetails/proportions/{g}-young-{m}-{wt}-idealproportions"
-                w[pk] = gw * mw * ww * cfg.get("proportions", 0.5)
+    for g, gw0 in genders.items():
+        for age, aw in ages.items():
+            gw = gw0 * aw
+            if gw <= 0:
+                continue
+            for race, rw in cfg.get("ethnicity", {"african": 1.0}).items():
+                w[f"macrodetails/{race}-{g}-{age}"] = w.get(f"macrodetails/{race}-{g}-{age}", 0) + gw * rw
+            for m, mw in muscles.items():
+                for wt, ww in weights.items():
+                    k = f"macrodetails/universal-{g}-{age}-{m}-{wt}"
+                    w[k] = gw * mw * ww
+                    if height != 0.5:
+                        hk = "maxheight" if height > 0.5 else "minheight"
+                        w[f"macrodetails/height/{g}-{age}-{m}-{wt}-{hk}"] = gw * mw * ww * abs(height - 0.5) * 2
+                    pk = f"macrodetails/proportions/{g}-{age}-{m}-{wt}-idealproportions"
+                    w[pk] = gw * mw * ww * cfg.get("proportions", 0.5)
     for k, v in cfg.get("extra_targets", {}).items():
         w[k] = w.get(k, 0) + v
     return {k: v for k, v in w.items() if abs(v) > 1e-6}
@@ -466,6 +470,29 @@ CLIPS = {
     "run": dict(duration=0.66, fps=30, leg_swing=0.75, knee=1.45, knee_base=0.25, knee_phase=0.6, hip_twist=0.12,
                 hip_roll=0.03, lean=0.2, arm_out=0.2, arm_swing=0.55, elbow=1.35, elbow_swing=0.2, curl=0.9,
                 bob=0.045, foot_roll=0.4, head_bob=0.015, chest_twist=0.08, drop=-0.06),
+    # life-sim actions: the game positions the character on the chair/bed/counter
+    "talk": dict(duration=2.4, fps=15, leg_swing=0.0, knee=0.0, knee_base=0.04, hip_twist=0.03, hip_roll=0.02,
+                 lean=0.03, arm_out=0.2, arm_swing=0.15, arm_bias=0.25, elbow=0.7, elbow_swing=0.35, curl=0.25,
+                 bob=0.006, bob_double=False, breathe=1.0, look=0.18, look_freq=2, sway=0.01, drop=-0.006),
+    "work": dict(duration=1.2, fps=15, leg_swing=0.0, knee=0.0, knee_base=0.05, hip_twist=0.0, hip_roll=0.01,
+                 lean=0.16, arm_out=0.12, arm_swing=0.1, arm_bias=0.55, elbow=0.8, elbow_swing=0.4, curl=0.5,
+                 bob=0.004, bob_double=True, breathe=1.0, look=0.06, look_freq=1, sway=0.0, drop=-0.01),
+    "sit": dict(duration=4.0, fps=10, leg_swing=0.0, knee=0.0, knee_base=1.55, leg_bias=1.5, hip_twist=0.0,
+                hip_roll=0.0, lean=-0.04, arm_out=0.1, arm_swing=0.02, arm_bias=0.55, elbow=0.75, curl=0.4, bob=0.003,
+                bob_double=False, breathe=1.0, look=0.22, look_freq=1, sway=0.0, drop=-0.47),
+    "sit_eat": dict(duration=2.0, fps=15, leg_swing=0.0, knee=0.0, knee_base=1.55, leg_bias=1.5, hip_twist=0.0,
+                    hip_roll=0.0, lean=0.08, arm_out=0.1, arm_swing=0.25, arm_bias=0.45, elbow=0.9, elbow_swing=0.7,
+                    curl=0.6, bob=0.004, bob_double=True, breathe=1.0, look=0.05, look_freq=1, sway=0.0, drop=-0.47),
+    "sit_work": dict(duration=1.0, fps=15, leg_swing=0.0, knee=0.0, knee_base=1.55, leg_bias=1.5, hip_twist=0.0,
+                     hip_roll=0.0, lean=0.12, arm_out=0.08, arm_swing=0.06, arm_bias=0.85, elbow=0.65,
+                     elbow_swing=0.3, curl=0.3, bob=0.002, bob_double=True, breathe=1.0, look=0.04, look_freq=1,
+                     sway=0.0, drop=-0.47),
+    "dance": dict(duration=0.92, fps=24, leg_swing=0.14, knee=0.35, knee_base=0.28, knee_phase=0.2, hip_twist=0.16,
+                  hip_roll=0.12, lean=0.08, arm_out=0.3, arm_swing=0.55, arm_bias=0.3, elbow=1.3, elbow_swing=0.4,
+                  curl=0.6, bob=0.05, bob_double=True, head_bob=0.05, chest_twist=0.12, sway=0.04, drop=-0.06),
+    "lie": dict(duration=5.0, fps=6, leg_swing=0.0, knee=0.0, knee_base=0.1, hip_twist=0.0, hip_roll=0.0,
+                lean=0.0, arm_out=0.14, arm_swing=0.0, elbow=0.3, curl=0.3, bob=0.0, bob_double=False, breathe=1.6,
+                look=0.0, look_freq=1, sway=0.0, drop=0.0),
 }
 
 
@@ -590,11 +617,62 @@ def inpaint(im, rects):
     return Image.fromarray(np.clip(out, 0, 255).astype(np.uint8), "RGB")
 
 
-def load_tex(path, size=None, tint=None, gamma=None, erase=None):
+def ankara(im, cfg):
+    """Overlay a procedural African wax-print (ankara) pattern, keeping the fabric's folds.
+
+    cfg: {"colors": [[r,g,b], ...] (ground first), "seed": int, "tile": px}
+    """
+    from PIL import ImageDraw
+    w, h = im.size
+    cols = [tuple(c) for c in cfg["colors"]]
+    tile = int(cfg.get("tile", 64))
+    rng = np.random.default_rng(cfg.get("seed", 1))
+    pat = Image.new("RGB", (w, h), cols[0])
+    d = ImageDraw.Draw(pat)
+    style = cfg.get("style", "rings")
+    for ty in range(-1, h // tile + 2):
+        for tx in range(-1, w // tile + 2):
+            cx = tx * tile + (tile // 2 if ty % 2 else 0)
+            cy = ty * tile
+            if style == "rings":
+                # concentric "record" circles with a dotted halo, the classic Vlisco-style motif
+                r = tile * 0.42
+                for k, c in enumerate([cols[1], cols[2], cols[1], cols[3 % len(cols)]]):
+                    rr = r * (1 - k * 0.24)
+                    d.ellipse([cx - rr, cy - rr, cx + rr, cy + rr], fill=c)
+                for a in range(10):
+                    ang = a / 10 * math.tau
+                    px, py = cx + math.cos(ang) * tile * 0.5, cy + math.sin(ang) * tile * 0.5
+                    d.ellipse([px - 2, py - 2, px + 2, py + 2], fill=cols[2])
+            else:
+                # "leaves": swirling petal shapes rotated per tile
+                rot = rng.uniform(0, math.tau)
+                for k in range(5):
+                    ang = rot + k * math.tau / 5
+                    px, py = cx + math.cos(ang) * tile * 0.22, cy + math.sin(ang) * tile * 0.22
+                    rr = tile * 0.16
+                    d.ellipse([px - rr, py - rr * 0.55, px + rr, py + rr * 0.55], fill=cols[1 + k % (len(cols) - 1)])
+                d.ellipse([cx - tile * 0.09, cy - tile * 0.09, cx + tile * 0.09, cy + tile * 0.09], fill=cols[-1])
+    src = np.asarray(im.convert("RGBA")).astype(np.float32) / 255
+    lum = src[..., :3].mean(axis=2)
+    # normalise fabric shading around 1.0 so folds darken/brighten the print
+    shade = np.clip(lum / max(np.percentile(lum[src[..., 3] > 0.5] if (src[..., 3] > 0.5).any() else lum, 70), 1e-3), 0.35, 1.25)
+    p = np.asarray(pat).astype(np.float32) / 255 * shade[..., None]
+    src[..., :3] = np.clip(p, 0, 1)
+    out = Image.fromarray((src * 255).astype(np.uint8), "RGBA")
+    return out if im.mode == "RGBA" else out.convert("RGB")
+
+
+def load_tex(path, size=None, tint=None, gamma=None, erase=None, print_cfg=None, clone=None):
     im = Image.open(path)
     im.load()
+    # clone: [[sx, sy, x0, y0, x1, y1], ...] copies plain fabric from (sx, sy) over a printed logo
+    for sx, sy, x0, y0, x1, y1 in clone or []:
+        im.paste(im.crop((sx, sy, sx + x1 - x0, sy + y1 - y0)), (x0, y0))
     if erase:
         im = inpaint(im, erase)
+    if print_cfg:
+        im = ankara(im, print_cfg)
     if size and im.size[0] != size:
         im = im.resize((size, size), Image.LANCZOS)
     if tint is not None or gamma is not None:
@@ -703,9 +781,12 @@ def main():
         mat = {"name": name, "pbrMetallicRoughness": {"metallicFactor": 0.0,
                                                        "roughnessFactor": mc.get("roughness", 0.8)}}
         tex_cfg = mc.get("texture")
+        if tex_cfg and cfg.get("lite"):
+            tex_cfg = dict(tex_cfg, size=min(tex_cfg.get("size") or 512, 512), quality=82)
         if tex_cfg:
             src = os.path.join(DATA, tex_cfg["file"]) if not tex_cfg["file"].startswith("/") else tex_cfg["file"]
-            im = load_tex(src, tex_cfg.get("size"), tex_cfg.get("tint"), tex_cfg.get("gamma"), tex_cfg.get("erase"))
+            im = load_tex(src, tex_cfg.get("size"), tex_cfg.get("tint"), tex_cfg.get("gamma"), tex_cfg.get("erase"),
+                          tex_cfg.get("ankara"), tex_cfg.get("clone"))
             alpha = im.mode == "RGBA" and mc.get("alpha")
             ti = glb.image(im, "image/png" if alpha else "image/jpeg", tex_cfg.get("quality", 88))
             mat["pbrMetallicRoughness"]["baseColorTexture"] = {"index": ti}
@@ -714,7 +795,7 @@ def main():
                 if mc["alpha"] == "MASK":
                     mat["alphaCutoff"] = mc.get("cutoff", 0.5)
                 mat["doubleSided"] = True
-        if mc.get("normal"):
+        if mc.get("normal") and not cfg.get("lite"):
             im = load_tex(os.path.join(DATA, mc["normal"]["file"]), mc["normal"].get("size"))
             mat["normalTexture"] = {"index": glb.image(im, "image/jpeg", 90), "scale": mc["normal"].get("scale", 1.0)}
         if mc.get("color"):

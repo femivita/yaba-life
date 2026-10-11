@@ -53,3 +53,106 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #1b1f1d; col
 
 .stick { position: fixed; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,.12); border: 2px solid rgba(255,255,255,.35); display: none; pointer-events: none; }
 .stick .knob { position: absolute; left: 35px; top: 35px; width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,.55); }
+
+/* ---- life sim HUD ---- */
+#hud .clock { display: none; }
+#life { position: fixed; inset: 0; pointer-events: none; z-index: 5; font-size: 14px; }
+#life button { font: inherit; color: var(--ink); cursor: pointer; }
+#life .hidden { display: none !important; }
+#life .card2 { background: var(--panel); border-radius: 12px; backdrop-filter: blur(6px); }
+#life .top { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; align-items: center; pointer-events: auto; }
+#life .pill { background: var(--panel); border-radius: 999px; padding: 7px 14px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; backdrop-filter: blur(6px); }
+#life .money { color: #7fe0a8; font-size: 16px; }
+#life .money.neg { color: #ff8a7a; }
+#life .speeds { display: flex; background: var(--panel); border-radius: 999px; overflow: hidden; }
+#life .speeds button { border: 0; background: none; padding: 7px 10px; font-size: 12px; letter-spacing: -2px; opacity: .65; }
+#life .speeds button.on { background: rgba(127,224,168,.25); opacity: 1; }
+#life .needs { position: absolute; left: 14px; top: 84px; width: 210px; padding: 10px 12px; pointer-events: auto; }
+#life .mood { font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; cursor: help; }
+#life .gem { width: 12px; height: 18px; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); display: inline-block; box-shadow: 0 0 8px currentColor; }
+#life .need { display: grid; grid-template-columns: 20px 62px 1fr; align-items: center; gap: 4px; margin: 3px 0; font-size: 12px; }
+#life .need i { height: 8px; background: rgba(255,255,255,.15); border-radius: 4px; overflow: hidden; display: block; }
+#life .need b { display: block; height: 100%; transition: width .4s, background .4s; }
+#life .wants { margin-top: 8px; border-top: 1px solid rgba(255,255,255,.12); padding-top: 6px; font-size: 12px; }
+#life .wants .wh { opacity: .6; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+#life .want { margin: 3px 0; }
+#life .act { position: absolute; top: 62px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; background: var(--panel); border-radius: 12px; padding: 8px 10px; pointer-events: auto; min-width: 260px; max-width: 90vw; }
+#life .act .ai { font-size: 26px; }
+#life .act .at { flex: 1; font-weight: 600; }
+#life .act .at i { display: block; height: 6px; background: rgba(255,255,255,.15); border-radius: 3px; margin-top: 5px; overflow: hidden; }
+#life .act .at b { display: block; height: 100%; background: #7fe0a8; }
+#life .act button { border: 0; background: rgba(255,255,255,.12); border-radius: 50%; width: 28px; height: 28px; }
+#life .toasts { position: absolute; top: 112px; right: 14px; width: min(340px, 70vw); display: flex; flex-direction: column; gap: 6px; }
+#life .toast { background: var(--panel); border-left: 4px solid #7fe0a8; border-radius: 10px; padding: 8px 12px; animation: tin .3s; transition: opacity .5s, transform .5s; }
+#life .toast.bad { border-color: #e74c3c; }
+#life .toast.money { border-color: #f1c40f; }
+#life .toast.level { border-color: #9b59b6; background: rgba(60, 30, 80, .85); }
+#life .toast.out { opacity: 0; transform: translateX(30px); }
+@keyframes tin { from { opacity: 0; transform: translateX(30px); } }
+#life .prompt { position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%); background: var(--panel); padding: 9px 16px; border-radius: 999px; font-weight: 600; }
+#life kbd { background: #fff; color: #111; border-radius: 5px; padding: 1px 7px; margin-right: 6px; font-weight: 800; }
+#life .menu { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); width: min(380px, 92vw); max-height: 70vh; overflow: auto; background: rgba(14,22,19,.9); border-radius: 14px; padding: 10px; pointer-events: auto; box-shadow: 0 10px 40px rgba(0,0,0,.4); }
+#life .mh { display: flex; flex-direction: column; padding: 4px 34px 8px 6px; position: relative; }
+#life .mh span { opacity: .65; font-size: 12px; }
+#life .x { position: absolute; top: 6px; right: 6px; border: 0; background: rgba(255,255,255,.1); border-radius: 50%; width: 28px; height: 28px; }
+#life .mi { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; border: 0; background: rgba(255,255,255,.06); border-radius: 10px; padding: 9px 10px; margin: 4px 0; }
+#life .mi:hover { background: rgba(127,224,168,.2); }
+#life .mi.off { opacity: .5; cursor: default; }
+#life .mi .k { width: 16px; opacity: .5; font-size: 11px; }
+#life .mi .mic { font-size: 20px; }
+#life .ml { display: flex; flex-direction: column; }
+#life em { font-style: normal; font-size: 12px; opacity: .7; }
+#life em.why { color: #ffb4a8; opacity: 1; }
+#life .dlg { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); width: min(640px, 94vw); background: rgba(14,22,19,.92); border-radius: 14px; padding: 12px; pointer-events: auto; }
+#life .dh { display: flex; gap: 14px; align-items: center; position: relative; padding-right: 30px; }
+#life .dh > div:first-child { display: flex; flex-direction: column; }
+#life .dh span { font-size: 12px; opacity: .7; }
+#life .rel { margin-left: auto; text-align: right; }
+#life .rel i, #life .bar { display: block; width: 140px; height: 8px; background: rgba(255,255,255,.15); border-radius: 4px; overflow: hidden; }
+#life .bar { width: 100%; margin: 4px 0; }
+#life .rel b, #life .bar b { display: block; height: 100%; background: #7fe0a8; }
+#life .lines p { margin: 8px 0; line-height: 1.35; }
+#life .lines .me { opacity: .8; }
+#life .lines .them { font-weight: 600; color: #ffe8a8; }
+#life .acts { display: flex; flex-wrap: wrap; gap: 6px; }
+#life .acts button { border: 0; background: rgba(255,255,255,.1); border-radius: 999px; padding: 7px 12px; }
+#life .acts button:hover { background: rgba(127,224,168,.25); }
+#life .acts button.off { opacity: .4; cursor: default; }
+#life .phonebtn { position: absolute; right: 200px; bottom: 64px; border: 0; background: var(--panel); border-radius: 12px; font-size: 22px; padding: 6px 10px; pointer-events: auto; }
+#life .usebtn { position: absolute; right: 24px; bottom: 210px; width: 72px; height: 72px; border-radius: 50%; border: 3px solid #7fe0a8; background: rgba(14,22,19,.8); font-size: 30px; pointer-events: auto; display: none; }
+@media (pointer: coarse) { #life .usebtn:not(.hidden) { display: block; } }
+#life .phone { position: absolute; right: 14px; top: 62px; bottom: 14px; width: min(380px, 94vw); background: #0f1714; border: 2px solid #2a3a33; border-radius: 22px; padding: 12px; pointer-events: auto; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
+#life .ph { display: flex; justify-content: space-between; align-items: center; position: relative; padding: 2px 4px 8px; }
+#life .tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+#life .tabs button { border: 0; background: rgba(255,255,255,.07); border-radius: 8px; padding: 6px 8px; font-size: 12px; }
+#life .tabs button.on { background: rgba(127,224,168,.25); }
+#life .pbody { overflow: auto; padding: 6px 4px; }
+#life .pbody h4 { margin: 10px 0 4px; }
+#life .pbody p { margin: 6px 0; }
+#life .row { display: flex; flex-direction: column; gap: 2px; padding: 8px; background: rgba(255,255,255,.05); border-radius: 10px; margin: 6px 0; }
+#life .dim { opacity: .65; font-size: 12px; }
+#life .tx { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,.06); }
+#life .neg { color: #ff8a7a; }
+#life .pos { color: #7fe0a8; }
+#life .quit { border: 0; background: rgba(231,76,60,.3); border-radius: 8px; padding: 6px 10px; }
+#life .modal { position: absolute; inset: 0; background: rgba(0,0,0,.55); display: grid; place-items: center; pointer-events: auto; z-index: 3; }
+#life .mbox { position: relative; width: min(480px, 92vw); max-height: 86vh; overflow: auto; background: #12201a; border-radius: 16px; padding: 18px; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+#life .mbox h2 { margin: 0 30px 8px 0; }
+#life .mbody p { margin: 6px 0; line-height: 1.4; }
+#life .mopts { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+#life .mopts button { display: flex; gap: 10px; align-items: center; text-align: left; border: 0; background: rgba(255,255,255,.07); border-radius: 10px; padding: 10px 12px; }
+#life .mopts button span:first-child { font-size: 22px; }
+#life .mopts button span:last-child { display: flex; flex-direction: column; }
+#life .mopts button:hover { background: rgba(127,224,168,.22); }
+#life .mopts button.off { opacity: .5; }
+@media (max-width: 760px) {
+  #life .needs { width: auto; top: 76px; padding: 6px 8px; }
+  #life .need { grid-template-columns: 18px 46px; }
+  #life .need .lb { display: none; }
+  #life .need { grid-template-columns: 18px 60px; }
+  #life .wants { display: none; }
+  #life .top { top: auto; bottom: 200px; left: 14px; transform: none; flex-wrap: wrap; max-width: 60vw; }
+  #life .phonebtn { right: 14px; bottom: 200px; }
+  #life .usebtn { bottom: 260px; }
+  #life .toasts { top: 76px; }
+}

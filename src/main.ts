@@ -3,10 +3,13 @@ import './ui/styles.css';
 import { loadMap } from './core/MapData';
 import { City, cityUniforms } from './world/City';
 import { Sky } from './world/Sky';
+import { findDoors } from './world/Doors';
+import { buildLandmarks } from './world/Landmarks';
 import { Labels } from './world/Labels';
 import { Character } from './player/Character';
 import { Input } from './player/Input';
-import { Player } from './player/Player';
+import { Game } from './game/Game';
+import { clockText } from './sim/State';
 import { Hud } from './ui/Hud';
 import { Quality } from './core/Quality';
 
@@ -48,7 +51,10 @@ async function start() {
   progress('Building streets and houses…', 0.45);
   const city = new City(map);
   scene.add(city.group);
-  await city.build((f) => progress('Building streets and houses…', 0.45 + f * 0.5));
+  const doors = findDoors(map, city.buildings);
+  const landmarks = buildLandmarks(map, city.buildings, doors);
+  scene.add(landmarks.group);
+  await city.build((f) => progress('Building streets and houses…', 0.45 + f * 0.5), landmarks.skip);
 
   const sky = new Sky(scene, quality.shadowSize);
   if (params.has('t')) sky.time = Number(params.get('t'));
@@ -60,15 +66,14 @@ async function start() {
   scene.add(lamp);
 
   const input = new Input(renderer.domElement);
-  const player = new Player(character, camera, input, city.buildings, map.meta.bounds);
-  const spawn = params.get('at')?.split(',').map(Number);
-  player.teleport(spawn?.[0] ?? map.meta.spawn.x, spawn?.[1] ?? map.meta.spawn.z);
+  const hud = new Hud(map);
+  const game = new Game({ renderer, camera, scene, map, city, sky, labels, hud, input, character, quality, lamp, params, doors });
+  const player = game.player;
+  sky.speed = 0;
   if (params.has('yaw')) player.yaw = Number(params.get('yaw'));
   if (params.has('dist')) player.distance = Number(params.get('dist'));
   if (params.has('pitch')) player.pitch = Number(params.get('pitch'));
-
-  const hud = new Hud(map);
-  hud.onTravel = (x, z) => player.teleport(x, z);
+  (window as unknown as { game: Game }).game = game;
 
   loading.classList.add('done');
   setTimeout(() => loading.remove(), 600);
@@ -82,20 +87,22 @@ async function start() {
     fpsAvg += (1 / Math.max(dt, 1e-3) - fpsAvg) * 0.05;
     cityUniforms.uTime.value += dt;
     if (autoWalk) input.keys.add('KeyW');
-    player.update(dt);
-    sky.update(dt, player.position, renderer);
-    city.setNight(cityUniforms.uNight.value);
-    lamp.intensity = cityUniforms.uNight.value * 9;
-    lamp.position.set(player.position.x + 2, 4.5, player.position.z + 1.5);
-    visTimer -= dt;
-    if (visTimer <= 0) {
-      visTimer = 0.25;
-      city.updateVisibility(player.position, quality.viewDistance);
+    game.update(dt);
+    if (!game.inside) {
+      sky.update(dt, player.position, renderer);
+      city.setNight(cityUniforms.uNight.value);
+      landmarks.update(cityUniforms.uTime.value, cityUniforms.uNight.value);
+      lamp.position.set(player.position.x + 2, 4.5, player.position.z + 1.5);
+      visTimer -= dt;
+      if (visTimer <= 0) {
+        visTimer = 0.25;
+        city.updateVisibility(player.position, quality.viewDistance);
+      }
+      labels.update(camera, player.position);
     }
-    labels.update(camera, player.position);
-    hud.update(player.position.x, player.position.z, player.heading, player.yaw, sky.clock, performance.now(), fpsAvg);
+    hud.update(player.position.x, player.position.z, player.heading, player.yaw, clockText(game.state.minutes), performance.now(), fpsAvg, game.insideName);
     quality.adapt(fpsAvg, renderer, sky);
-    renderer.render(scene, camera);
+    renderer.render(game.activeScene, camera);
     requestAnimationFrame(frame);
   }
   frame();

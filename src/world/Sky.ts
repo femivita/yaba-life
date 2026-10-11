@@ -71,7 +71,7 @@ export class Sky {
   }
 
   update(dt: number, focus: THREE.Vector3, renderer: THREE.WebGLRenderer) {
-    this.time = (this.time + (dt * this.speed) / 60) % 24;
+    if (this.speed) this.time = (this.time + (dt * this.speed) / 60) % 24;
     // sun angle: 0 at 06:55 sunrise, PI at 18:55 sunset
     const a = ((this.time - 6.9) / 12) * Math.PI;
     const elev = Math.sin(a);

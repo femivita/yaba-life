@@ -1,0 +1,83 @@
+{
+  "id": "baba_landlord",
+  "lite": true,
+  "ethnicity": {
+    "african": 1.0
+  },
+  "description": "Pa Adebayo, 66, Tunde's landlord: shirt, trousers, grey hair",
+  "gender": 1.0,
+  "old": 0.65,
+  "muscle": 0.4,
+  "weight": 0.62,
+  "height": 0.45,
+  "proportions": 0.6,
+  "skin": {
+    "roughness": 0.55,
+    "texture": {
+      "file": "skins/old_african_male/textures/old_darkskinned_male_diffuse.png",
+      "size": 512,
+      "quality": 88
+    }
+  },
+  "proxies": [
+    {
+      "path": "clothes/male_casualsuit01/male_casualsuit01.json",
+      "roughness": 0.9,
+      "texture": {
+        "file": "proxies/clothes/male_casualsuit01/textures/male_casualsuit01_diffuse.png"
+      }
+    },
+    {
+      "path": "clothes/shoes02/shoes02.json",
+      "roughness": 0.9,
+      "texture": {
+        "file": "proxies/clothes/shoes02/textures/shoes02_diffuse.png"
+      }
+    },
+    {
+      "path": "hair/short01/short01.json",
+      "roughness": 0.75,
+      "alpha": "MASK",
+      "cutoff": 0.45,
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/hair/short01/textures/short01_diffuse.png",
+        "tint": [
+          0.85,
+          0.85,
+          0.83
+        ],
+        "gamma": 0.3
+      }
+    },
+    {
+      "path": "eyebrows/eyebrow001/eyebrow001.json",
+      "alpha": "BLEND",
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/eyebrows/eyebrow001/textures/eyebrow001.png",
+        "tint": [
+          0.25,
+          0.2,
+          0.18
+        ]
+      }
+    },
+    {
+      "path": "eyelashes/Eyelashes01/Eyelashes01.json",
+      "alpha": "BLEND",
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/eyelashes/Eyelashes01/textures/eyelashes01.png"
+      }
+    },
+    {
+      "path": "eyes/Low-Poly/Low-Poly.json",
+      "roughness": 0.15,
+      "delete_body": false,
+      "texture": {
+        "file": "proxies/eyes/Low-Poly/textures/brown_eye.png"
+      }
+    }
+  ]
+}

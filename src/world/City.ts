@@ -140,7 +140,7 @@ export class City {
   }
 
   /** Builds geometry in a worker; resolves when every chunk is in the scene. */
-  build(onProgress?: (f: number) => void): Promise<void> {
+  build(onProgress?: (f: number) => void, skip: Iterable<number> = []): Promise<void> {
     return new Promise((resolve, reject) => {
       const worker = new CityWorker();
       let n = 0;
@@ -156,7 +156,7 @@ export class City {
       };
       worker.onerror = (e) => reject(e);
       const copy = this.map.buf.slice(0);
-      worker.postMessage({ meta: this.map.meta, buf: copy }, [copy]);
+      worker.postMessage({ meta: this.map.meta, buf: copy, skip: [...skip] }, [copy]);
     });
   }
 

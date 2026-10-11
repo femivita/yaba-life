@@ -42,6 +42,53 @@ export class BuildingIndex {
     return this.grid.get(Math.floor(x / CELL) * 100003 + Math.floor(z / CELL)) ?? [];
   }
 
+  get count() {
+    return this.a.bCounts.length;
+  }
+
+  /** Footprint ring of building i in metres. */
+  ring(i: number): [number, number][] {
+    const out: [number, number][] = [];
+    for (let k = this.starts[i]; k < this.starts[i + 1]; k++) out.push([this.a.bCoords[k * 2] / 10, this.a.bCoords[k * 2 + 1] / 10]);
+    return out;
+  }
+
+  area(i: number) {
+    const r = this.ring(i);
+    let a = 0;
+    for (let k = 0, j = r.length - 1; k < r.length; j = k++) a += (r[j][0] + r[k][0]) * (r[j][1] - r[k][1]);
+    return Math.abs(a / 2);
+  }
+
+  centroid(i: number): [number, number] {
+    const r = this.ring(i);
+    let x = 0;
+    let z = 0;
+    for (const p of r) {
+      x += p[0];
+      z += p[1];
+    }
+    return [x / r.length, z / r.length];
+  }
+
+  /** Buildings whose grid cells fall within radius of (x, z). */
+  around(x: number, z: number, radius: number): number[] {
+    const set = new Set<number>();
+    for (let gx = Math.floor((x - radius) / CELL); gx <= Math.floor((x + radius) / CELL); gx++)
+      for (let gz = Math.floor((z - radius) / CELL); gz <= Math.floor((z + radius) / CELL); gz++)
+        for (const i of this.grid.get(gx * 100003 + gz) ?? []) set.add(i);
+    return [...set];
+  }
+
+  /** Distance from (x, z) to the footprint outline of building i (0 if inside). */
+  distanceTo(i: number, x: number, z: number) {
+    if (this.contains(i, x, z)) return 0;
+    const r = this.ring(i);
+    let best = Infinity;
+    for (let k = 0, j = r.length - 1; k < r.length; j = k++) best = Math.min(best, segDist(x, z, r[j][0], r[j][1], r[k][0], r[k][1]));
+    return best;
+  }
+
   height(i: number) {
     return this.a.bHeights[i] / 10;
   }
@@ -126,4 +173,12 @@ export class BuildingIndex {
     }
     return [x, z];
   }
+}
+
+export function segDist(x: number, z: number, ax: number, az: number, bx: number, bz: number) {
+  const ex = bx - ax;
+  const ez = bz - az;
+  const l2 = ex * ex + ez * ez || 1;
+  const t = Math.max(0, Math.min(1, ((x - ax) * ex + (z - az) * ez) / l2));
+  return Math.hypot(x - ax - ex * t, z - az - ez * t);
 }

@@ -24,7 +24,7 @@ export class Hud {
       <div class="card clock"></div>
       <canvas class="mini" width="220" height="220"></canvas>
       <button class="card mapbtn" title="Map (M)">🗺️ Map</button>
-      <div class="card help">WASD / arrows move · Shift run · drag to look · wheel zoom · M map</div>
+      <div class="card help">WASD move · Shift run · E interact · P phone · M map · drag to look</div>
       <div class="fps"></div>
       <div class="bigmap hidden">
         <div class="bigwrap"><canvas></canvas></div>
@@ -108,7 +108,7 @@ export class Hud {
     g.stroke();
   }
 
-  update(x: number, z: number, heading: number, camYaw: number, clock: string, now: number, fps: number) {
+  update(x: number, z: number, heading: number, camYaw: number, clock: string, now: number, fps: number, inside: string | null = null) {
     this.playerPos = { x, z };
     this.clock.textContent = `🕒 ${clock}`;
     this.fps.textContent = `${fps.toFixed(0)} fps`;
@@ -116,8 +116,13 @@ export class Hud {
       this.lastStreetCheck = now;
       const street = this.mapView.streetAt(x, z);
       const lm = nearestLandmark(this.map.meta.landmarks, x, z);
-      this.place.textContent = street ?? (lm && lm.d < 250 ? shortName(lm.l.name) : 'Yaba');
-      this.sub.textContent = lm ? `${lm.d < 60 ? 'At' : 'Near'} ${shortName(lm.l.name)} · ${Math.round(lm.d)} m` : '';
+      if (inside) {
+        this.place.textContent = inside;
+        this.sub.textContent = 'Inside · walk out the door or press M to travel';
+      } else {
+        this.place.textContent = street ?? (lm && lm.d < 250 ? shortName(lm.l.name) : 'Yaba');
+        this.sub.textContent = lm ? `${lm.d < 60 ? 'At' : 'Near'} ${shortName(lm.l.name)} · ${Math.round(lm.d)} m` : '';
+      }
     }
     // minimap: north-up rotated to camera, 1 px = 1.5 m
     const g = this.miniCtx;
